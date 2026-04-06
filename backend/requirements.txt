@@ -1,0 +1,47 @@
+# Web framework
+fastapi==0.111.0
+uvicorn[standard]==0.29.0
+python-multipart==0.0.9
+
+# Auth
+python-jose[cryptography]==3.3.0
+bcrypt==4.1.3
+passlib==1.7.4
+
+# Database
+sqlalchemy==2.0.30
+asyncpg==0.29.0
+psycopg2-binary==2.9.9
+alembic==1.13.1
+
+# PDF
+PyPDF2==3.0.1
+pdfplumber==0.11.0
+
+# ML
+scikit-learn==1.4.2
+numpy==1.26.4
+joblib==1.4.2
+
+# Groq
+groq==0.9.0
+
+# Pinecone (future)
+pinecone-client==3.2.2
+
+# Rate limiting
+slowapi==0.1.9
+
+# Utils
+python-dotenv==1.0.1
+httpx==0.27.0
+tenacity==8.3.0
+
+# Pydantic settings
+pydantic-settings
+
+# Visualizations
+requests==2.32.3
+pandas==2.2.2
+matplotlib==3.9.0
+seaborn==0.13.2

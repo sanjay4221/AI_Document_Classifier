@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign In — AI-ML Document Classifier</title>
+  <link rel="stylesheet" href="/css/style.css"/>
+  <style>
+    body { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+
+    .auth-wrapper {
+      width: 100%;
+      max-width: 420px;
+      padding: 1rem;
+      animation: fadeUp 0.5s ease;
+    }
+
+    .auth-logo {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .auth-logo .logo-mark {
+      width: 56px;
+      height: 56px;
+      background: var(--grad-primary);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      margin: 0 auto 1rem;
+      box-shadow: var(--shadow-glow);
+    }
+
+    .auth-logo h1 { font-size: 1.5rem; margin-bottom: 0.3rem; }
+    .auth-logo p  { font-size: 0.88rem; }
+
+    .auth-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 2rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .auth-card h2 { font-size: 1.3rem; margin-bottom: 0.3rem; }
+    .auth-card .subtitle { font-size: 0.85rem; margin-bottom: 1.5rem; }
+
+    .auth-footer {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .auth-footer a { color: var(--purple-light); }
+
+    .toggle-link {
+      color: var(--purple-light);
+      cursor: pointer;
+      font-size: 0.85rem;
+      text-align: center;
+      display: block;
+      margin-top: 1rem;
+    }
+
+    .toggle-link:hover { color: var(--text-primary); }
+  </style>
+</head>
+<body>
+  <div class="auth-wrapper">
+    <div class="auth-logo">
+      <div class="logo-mark">🧠</div>
+      <h1>AI-ML Document Classifier</h1>
+      <p>Enterprise document intelligence</p>
+    </div>
+
+    <!-- Login Panel -->
+    <div id="login-panel" class="auth-card">
+      <h2>Welcome back</h2>
+      <p class="subtitle">Sign in to classify your documents</p>
+
+      <div id="login-alert" class="hidden"></div>
+
+      <form id="login-form">
+        <div class="form-group">
+          <label class="form-label">Email address</label>
+          <input id="login-email" type="email" class="form-input" placeholder="you@company.com" required/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input id="login-password" type="password" class="form-input" placeholder="••••••••" required/>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full btn-lg">Sign in</button>
+      </form>
+
+      <span class="toggle-link" id="show-register">Don't have an account? Create one →</span>
+
+      <div class="auth-footer">
+        <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a>
+      </div>
+    </div>
+
+    <!-- Register Panel -->
+    <div id="register-panel" class="auth-card hidden">
+      <h2>Create account</h2>
+      <p class="subtitle">Start classifying documents in minutes</p>
+
+      <div id="register-alert" class="hidden"></div>
+
+      <form id="register-form">
+        <div class="form-group">
+          <label class="form-label">Full name</label>
+          <input id="reg-name" type="text" class="form-input" placeholder="John Smith" required/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email address</label>
+          <input id="reg-email" type="email" class="form-input" placeholder="you@company.com" required/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input id="reg-password" type="password" class="form-input" placeholder="Min. 6 characters" required/>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full btn-lg">Create account</button>
+      </form>
+
+      <span class="toggle-link" id="show-login">← Back to sign in</span>
+    </div>
+  </div>
+
+  <script src="/js/auth.js"></script>
+  <script>initLoginPage();</script>
+</body>
+</html>

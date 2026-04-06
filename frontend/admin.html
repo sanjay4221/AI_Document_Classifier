@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard — AI-ML Classifier</title>
+  <link rel="stylesheet" href="/css/style.css"/>
+  <style>
+    .admin-hero { padding: 2rem 0 1.5rem; }
+    .admin-hero h1 { font-size: 1.8rem; margin-bottom: 0.3rem; }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .stat-card-icon {
+      font-size: 2rem;
+      width: 52px;
+      height: 52px;
+      background: rgba(139,92,246,0.1);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .stat-card-val {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    .stat-card-label { font-size: 0.78rem; color: var(--text-muted); }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 4px;
+      margin-bottom: 1.5rem;
+      width: fit-content;
+    }
+
+    .admin-tab {
+      padding: 7px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: var(--transition);
+      border: none;
+      background: transparent;
+    }
+
+    .admin-tab.active {
+      background: var(--grad-primary);
+      color: #fff;
+    }
+
+    .admin-tab:hover:not(.active) { color: var(--text-primary); }
+
+    /* Charts */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 700px) { .charts-grid { grid-template-columns: 1fr; } }
+
+    .dept-bar-row { margin-bottom: 10px; }
+    .dept-bar-label { display: flex; justify-content: space-between; font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 4px; }
+
+    .method-bars { display: flex; align-items: flex-end; gap: 1rem; height: 140px; padding: 0 0.5rem; }
+    .method-stat { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
+    .method-stat-bar { width: 100%; max-width: 60px; border-radius: 4px 4px 0 0; transition: height 0.6s ease; }
+    .method-stat-label { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; letter-spacing: 0.05em; }
+    .method-stat-count { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand">
+      <div class="logo-icon">🧠</div>
+      AI-ML Classifier
+    </div>
+    <div class="nav-links">
+      <a href="/index.html">Dashboard</a>
+      <a href="/admin.html" class="active">Admin</a>
+    </div>
+    <div id="nav-user"></div>
+  </nav>
+
+  <div class="container">
+    <div class="admin-hero">
+      <h1>Admin <span class="text-gradient">Dashboard</span></h1>
+      <p>Monitor classifications, manage users, track system performance</p>
+    </div>
+
+    <div id="admin-alert" class="hidden"></div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-card-icon">👥</div>
+        <div>
+          <div class="stat-card-val" id="stat-users">—</div>
+          <div class="stat-card-label">Total users</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon">📄</div>
+        <div>
+          <div class="stat-card-val" id="stat-documents">—</div>
+          <div class="stat-card-label">Documents uploaded</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon">✅</div>
+        <div>
+          <div class="stat-card-val" id="stat-classified">—</div>
+          <div class="stat-card-label">Classified</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon">📊</div>
+        <div>
+          <div class="stat-card-val" id="stat-avg-confidence">—</div>
+          <div class="stat-card-label">Avg. confidence</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="charts-grid">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📊 By Department</div>
+        </div>
+        <div id="dept-chart"></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🤖 Classification Method</div>
+        </div>
+        <div class="method-bars" id="method-chart"></div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="admin-tab active" data-tab="classifications" onclick="switchTab('classifications')">Classifications</button>
+      <button class="admin-tab" data-tab="users" onclick="switchTab('users')">Users</button>
+    </div>
+
+    <!-- Classifications Tab -->
+    <div id="tab-classifications" class="tab-content card">
+      <div class="card-header">
+        <div class="card-title">🗂️ Recent Classifications</div>
+        <button class="btn btn-ghost btn-sm" onclick="loadClassifications()">↻ Refresh</button>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th><th>Doc ID</th><th>Department</th>
+              <th>Confidence</th><th>Method</th><th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="class-tbody">
+            <tr><td colspan="6" style="text-align:center;color:var(--text-muted)">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Users Tab -->
+    <div id="tab-users" class="tab-content card hidden">
+      <div class="card-header">
+        <div class="card-title">👥 Users</div>
+        <button class="btn btn-ghost btn-sm" onclick="loadUsers()">↻ Refresh</button>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th><th>Name</th><th>Email</th>
+              <th>Role</th><th>Status</th><th>Joined</th><th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="users-tbody">
+            <tr><td colspan="7" style="text-align:center;color:var(--text-muted)">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/auth.js"></script>
+  <script src="/js/admin.js"></script>
+</body>
+</html>

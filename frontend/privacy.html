@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Privacy Policy — AI Classifier</title>
+  <link rel="stylesheet" href="/css/style.css"/>
+  <style>
+    .policy-container { max-width: 720px; margin: 0 auto; padding: 3rem 1.5rem; }
+    .policy-container h1 { margin-bottom: 0.5rem; }
+    .policy-container .updated { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 2.5rem; }
+    .policy-section { margin-bottom: 2rem; }
+    .policy-section h2 { font-size: 1.1rem; color: var(--purple-light); margin-bottom: 0.75rem; }
+    .policy-section p, .policy-section li { font-size: 0.92rem; color: var(--text-secondary); line-height: 1.8; }
+    .policy-section ul { padding-left: 1.5rem; }
+    .policy-section li { margin-bottom: 0.3rem; }
+    .back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--purple-light); margin-bottom: 2rem; font-size: 0.9rem; }
+    .footer {
+    margin-top: 3rem;
+    padding: 1.5rem;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand"><div class="logo-icon">🧠</div>AI Classifier</div>
+    <div id="nav-user"></div>
+  </nav>
+  <div class="policy-container">
+    <a href="/index.html" class="back-link">← Back to Dashboard</a>
+    <h1>Privacy Policy</h1>
+    <p class="updated">Last updated: April 2024</p>
+
+    <div class="policy-section">
+      <h2>1. Information We Collect</h2>
+      <p>We collect information you provide when registering (name, email, password) and documents you upload for classification. Document content is processed temporarily for classification purposes only.</p>
+    </div>
+    <div class="policy-section">
+      <h2>2. How We Use Your Data</h2>
+      <ul>
+        <li>To provide document classification services</li>
+        <li>To maintain your account and classification history</li>
+        <li>To improve classification accuracy over time</li>
+      </ul>
+    </div>
+    <div class="policy-section">
+      <h2>3. Data Storage</h2>
+      <p>Your account data is stored securely in Neon PostgreSQL hosted in AWS Asia Pacific (Sydney). Uploaded PDFs are stored temporarily and can be deleted on request.</p>
+    </div>
+    <div class="policy-section">
+      <h2>4. Third Party Services</h2>
+      <p>We use Groq API to process document text for AI classification. Document text is sent to Groq's servers for inference. Groq's privacy policy applies to this processing.</p>
+    </div>
+    <!-- 
+    <div class="policy-section">
+      <h2>5. Contact</h2>
+      <p>For privacy concerns, contact: sanjayetc.kumar008@gmail.com</p>
+    </div>
+    -->
+  </div>
+  <footer class="footer">
+    <p>© 2026 AI-ML Classifier • Developed by Sanjay Kumar</p>
+  </footer>
+  <script src="/js/auth.js"></script>
+  <script>initNav();</script>
+</body>
+</html>

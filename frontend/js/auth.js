@@ -5,6 +5,7 @@
 
 const API = '';
 
+
 /* ── Token helpers ────────────────────────────── */
 const Auth = {
   getToken:   () => localStorage.getItem('token'),
@@ -155,6 +156,14 @@ function showAlert(containerId, message, type = 'error') {
   setTimeout(() => el.classList.add('hidden'), 5000);
 }
 
+/* ── Panel switcher — global so inline onclick works ─ */
+function showAuthPanel(id) {
+  ['login-panel', 'register-panel', 'forgot-panel'].forEach(p => {
+    document.getElementById(p)?.classList.add('hidden');
+  });
+  document.getElementById(id)?.classList.remove('hidden');
+}
+
 /* ── Login page logic ────────────────────────── */
 function initLoginPage() {
   // Apply theme toggle to login page navbar if present
@@ -175,32 +184,30 @@ function initLoginPage() {
 
   const loginForm    = document.getElementById('login-form');
   const registerForm = document.getElementById('register-form');
-  const showRegister = document.getElementById('show-register');
-  const showLogin    = document.getElementById('show-login');
+  const forgotForm   = document.getElementById('forgot-form');
 
-  // Toggle between login and register
-  showRegister?.addEventListener('click', () => {
-    document.getElementById('login-panel').classList.add('hidden');
-    document.getElementById('register-panel').classList.remove('hidden');
+  // ── Panel switchers ──────────────────────────
+  document.getElementById('show-register')?.addEventListener('click', () => showAuthPanel('register-panel'));
+  document.getElementById('show-login')?.addEventListener('click',    () => showAuthPanel('login-panel'));
+  document.getElementById('show-forgot')?.addEventListener('click',   () => {
+    const loginEmail = document.getElementById('login-email')?.value;
+    if (loginEmail) document.getElementById('forgot-email').value = loginEmail;
+    showAuthPanel('forgot-panel');
   });
+  document.getElementById('show-login-from-forgot')?.addEventListener('click', () => showAuthPanel('login-panel'));
 
-  showLogin?.addEventListener('click', () => {
-    document.getElementById('register-panel').classList.add('hidden');
-    document.getElementById('login-panel').classList.remove('hidden');
-  });
-
-  // Login submit
+  // ── Login submit ─────────────────────────────
   loginForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn      = loginForm.querySelector('button[type=submit]');
     const email    = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
 
-    btn.disabled = true;
+    btn.disabled  = true;
     btn.innerHTML = '<span class="spinner"></span> Signing in...';
 
     try {
-      const data     = await apiRequest('POST', '/auth/login', { email, password });
+      const data      = await apiRequest('POST', '/auth/login', { email, password });
       const tempToken = data.access_token;
       localStorage.setItem('token', tempToken);
       const user = await apiRequest('GET', '/auth/me');
@@ -208,12 +215,12 @@ function initLoginPage() {
       window.location.href = '/index.html';
     } catch (err) {
       showAlert('login-alert', err.message);
-      btn.disabled = false;
+      btn.disabled  = false;
       btn.innerHTML = 'Sign in';
     }
   });
 
-  // Register submit
+  // ── Register submit ──────────────────────────
   registerForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn       = registerForm.querySelector('button[type=submit]');
@@ -226,22 +233,64 @@ function initLoginPage() {
       return;
     }
 
-    btn.disabled = true;
+    btn.disabled  = true;
     btn.innerHTML = '<span class="spinner"></span> Creating account...';
 
     try {
       await apiRequest('POST', '/auth/register', { email, password, full_name });
       showAlert('register-alert', 'Account created! Please sign in.', 'success');
       setTimeout(() => {
-        document.getElementById('register-panel').classList.add('hidden');
-        document.getElementById('login-panel').classList.remove('hidden');
+        showAuthPanel('login-panel');
         document.getElementById('login-email').value = email;
       }, 1500);
     } catch (err) {
       showAlert('register-alert', err.message);
     } finally {
-      btn.disabled = false;
+      btn.disabled  = false;
       btn.innerHTML = 'Create account';
     }
   });
+
+  // ── Forgot password submit ───────────────────
+  forgotForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn   = forgotForm.querySelector('button[type=submit]');
+    const email = document.getElementById('forgot-email').value;
+
+    btn.disabled  = true;
+    btn.innerHTML = '<span class="spinner"></span> Sending...';
+
+    try {
+      await apiRequest('POST', '/auth/forgot-password', { email });
+
+      // Show sent confirmation — always same UI regardless of whether email exists
+      document.getElementById('forgot-form-wrap').classList.add('hidden');
+      document.getElementById('forgot-sent').classList.remove('hidden');
+      document.getElementById('sent-email-display').textContent = email;
+
+    } catch (err) {
+      showAlert('forgot-alert', err.message || 'Failed to send. Please try again.');
+      btn.disabled  = false;
+      btn.innerHTML = 'Send reset link';
+    }
+  });
+}
+
+/* ── Resend reset email ───────────────────────── */
+async function resendReset() {
+  const email = document.getElementById('forgot-email')?.value
+             || document.getElementById('sent-email-display')?.textContent;
+  if (!email) return;
+
+  try {
+    await apiRequest('POST', '/auth/forgot-password', { email });
+    // Brief feedback on the button
+    const btn = document.querySelector('#forgot-sent .btn');
+    if (btn) {
+      btn.textContent = '✅ Sent again!';
+      setTimeout(() => { btn.textContent = 'Resend email'; }, 3000);
+    }
+  } catch (err) {
+    console.error('Resend failed:', err);
+  }
 }

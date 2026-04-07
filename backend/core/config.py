@@ -4,6 +4,12 @@ from typing import Optional
 
 
 class Settings(BaseSettings):
+
+    # Email — Resend
+    RESEND_API_KEY: str = ""
+    EMAIL_FROM:     str = "onboarding@resend.dev"
+    APP_BASE_URL: str = ""
+
     # App
     APP_NAME: str = "AI Document Classifier"
     APP_VERSION: str = "1.0.0"

@@ -9,6 +9,7 @@
 [![Groq](https://img.shields.io/badge/Groq-LLaMA_3.1-F55036?style=flat&logo=groq&logoColor=white)](https://groq.com)
 [![Azure](https://img.shields.io/badge/Azure-Container_Apps-0078D4?style=flat&logo=microsoftazure&logoColor=white)](https://azure.microsoft.com)
 [![PostgreSQL](https://img.shields.io/badge/Neon-PostgreSQL-00E699?style=flat&logo=postgresql&logoColor=white)](https://neon.tech)
+[![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white)](https://www.docker.com/)
 [![License](https://img.shields.io/badge/License-MIT-purple?style=flat)](LICENSE)
 
 **[🌐 Live Demo](https://ai-classifier-app.prouddune-47b5fd2b.australiaeast.azurecontainerapps.io) · [📖 API Docs](https://ai-classifier-app.prouddune-47b5fd2b.australiaeast.azurecontainerapps.io/docs) · [🐛 Report Bug](https://github.com/sanjay4221/AI_Document_Classifier/issues)**
@@ -222,6 +223,7 @@ Full deployment guide: [DEPLOYMENT.md](DEPLOYMENT.md)
 - [x] Department filtering
 - [x] CSV/PDF export
 - [x] Delete + reclassify
+- [x] Reset paswword using render.com
 - [ ] Pinecone similarity search
 - [ ] Batch processing (50+ docs)
 - [ ] OAuth (Google login)

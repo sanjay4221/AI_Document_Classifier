@@ -115,3 +115,84 @@ def get_classification(db: Session, doc_id: int) -> Optional[ClassificationResul
 
 def get_all_classifications(db: Session) -> List[ClassificationResult]:
     return db.query(ClassificationResult).order_by(ClassificationResult.created_at.desc()).all()
+
+# ── Paste these functions into crud.py ───────────────────────────────────────
+ 
+def create_password_reset_token(db, email: str):
+    """
+    Generate a secure reset token for the given email.
+    Returns (raw_token, user) or (None, None) if email not found.
+    The raw token is what goes in the email link.
+    Only the SHA-256 hash is stored in the DB (never the raw token).
+    """
+    import secrets, hashlib
+    from datetime import datetime, timedelta
+ 
+    user = db.query(User).filter(
+        User.email == email,
+        User.is_active == True
+    ).first()
+ 
+    if not user:
+        return None, None
+ 
+    # Generate cryptographically secure token
+    raw_token  = secrets.token_urlsafe(32)
+    token_hash = hashlib.sha256(raw_token.encode()).hexdigest()
+    expiry     = datetime.utcnow() + timedelta(minutes=15)
+ 
+    user.reset_token        = token_hash
+    user.reset_token_expiry = expiry
+    db.commit()
+    db.refresh(user)
+ 
+    return raw_token, user
+ 
+ 
+def verify_reset_token(db, raw_token: str):
+    """
+    Verify a reset token.
+    Returns the User if token is valid and not expired, else None.
+    """
+    import hashlib
+    from datetime import datetime
+ 
+    token_hash = hashlib.sha256(raw_token.encode()).hexdigest()
+ 
+    user = db.query(User).filter(
+        User.reset_token == token_hash
+    ).first()
+ 
+    if not user:
+        return None
+ 
+    if user.reset_token_expiry is None:
+        return None
+ 
+    if datetime.utcnow() > user.reset_token_expiry:
+        # Expired — clear token
+        user.reset_token        = None
+        user.reset_token_expiry = None
+        db.commit()
+        return None
+ 
+    return user
+ 
+ 
+def reset_password(db, raw_token: str, new_password: str):
+    """
+    Reset the user's password using a valid token.
+    Returns True on success, False if token invalid/expired.
+    """
+    
+    user = verify_reset_token(db, raw_token)
+    if not user:
+        return False
+ 
+    # Update password and clear token (one-use only)
+    user.hashed_password    = hash_password(new_password)
+    user.reset_token        = None
+    user.reset_token_expiry = None
+    db.commit()
+    return True
+ 

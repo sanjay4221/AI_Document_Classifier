@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sign In — AI-ML Document Classifier</title>
+  <title>Sign In — AI Document Classifier</title>
   <link rel="stylesheet" href="/css/style.css"/>
   <style>
     body { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
@@ -63,20 +63,48 @@
       text-align: center;
       display: block;
       margin-top: 1rem;
+      transition: var(--transition);
     }
 
     .toggle-link:hover { color: var(--text-primary); }
+
+    /* Forgot password link — sits inline next to password label */
+    .forgot-link {
+      color: var(--purple-light);
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: var(--transition);
+      user-select: none;
+      flex-shrink: 0;
+    }
+
+    .forgot-link:hover { color: var(--text-primary); text-decoration: underline; }
+
+    /* Sent confirmation state */
+    .sent-box {
+      text-align: center;
+      padding: 1rem 0 0.5rem;
+    }
+
+    .sent-icon {
+      font-size: 3rem;
+      display: block;
+      margin-bottom: 1rem;
+    }
+
+    .sent-box h3 { font-size: 1.1rem; margin-bottom: 0.5rem; }
+    .sent-box p  { font-size: 0.88rem; margin-bottom: 1.5rem; }
   </style>
 </head>
 <body>
   <div class="auth-wrapper">
     <div class="auth-logo">
       <div class="logo-mark">🧠</div>
-      <h1>AI-ML Document Classifier</h1>
+      <h1>AI Document Classifier</h1>
       <p>Enterprise document intelligence</p>
     </div>
 
-    <!-- Login Panel -->
+    <!-- ── Login Panel ─────────────────────────────── -->
     <div id="login-panel" class="auth-card">
       <h2>Welcome back</h2>
       <p class="subtitle">Sign in to classify your documents</p>
@@ -86,23 +114,30 @@
       <form id="login-form">
         <div class="form-group">
           <label class="form-label">Email address</label>
-          <input id="login-email" type="email" class="form-input" placeholder="you@company.com" required/>
+          <input id="login-email" type="email" class="form-input"
+                 placeholder="you@company.com" required/>
         </div>
         <div class="form-group">
-          <label class="form-label">Password</label>
-          <input id="login-password" type="password" class="form-input" placeholder="••••••••" required/>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <label class="form-label" style="margin-bottom:0">Password</label>
+            <span class="forgot-link" id="show-forgot"
+                  onclick="showAuthPanel('forgot-panel')">Forgot password?</span>
+          </div>
+          <input id="login-password" type="password" class="form-input"
+                 placeholder="••••••••" required/>
         </div>
         <button type="submit" class="btn btn-primary btn-full btn-lg">Sign in</button>
       </form>
 
-      <span class="toggle-link" id="show-register">Don't have an account? Create one →</span>
+      <span class="toggle-link" id="show-register"
+            onclick="showAuthPanel('register-panel')">Don't have an account? Create one →</span>
 
       <div class="auth-footer">
         <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a>
       </div>
     </div>
 
-    <!-- Register Panel -->
+    <!-- ── Register Panel ──────────────────────────── -->
     <div id="register-panel" class="auth-card hidden">
       <h2>Create account</h2>
       <p class="subtitle">Start classifying documents in minutes</p>
@@ -112,21 +147,68 @@
       <form id="register-form">
         <div class="form-group">
           <label class="form-label">Full name</label>
-          <input id="reg-name" type="text" class="form-input" placeholder="John Smith" required/>
+          <input id="reg-name" type="text" class="form-input"
+                 placeholder="John Smith" required/>
         </div>
         <div class="form-group">
           <label class="form-label">Email address</label>
-          <input id="reg-email" type="email" class="form-input" placeholder="you@company.com" required/>
+          <input id="reg-email" type="email" class="form-input"
+                 placeholder="you@company.com" required/>
         </div>
         <div class="form-group">
           <label class="form-label">Password</label>
-          <input id="reg-password" type="password" class="form-input" placeholder="Min. 6 characters" required/>
+          <input id="reg-password" type="password" class="form-input"
+                 placeholder="Min. 6 characters" required/>
         </div>
         <button type="submit" class="btn btn-primary btn-full btn-lg">Create account</button>
       </form>
 
-      <span class="toggle-link" id="show-login">← Back to sign in</span>
+      <span class="toggle-link" id="show-login"
+            onclick="showAuthPanel('login-panel')">← Back to sign in</span>
     </div>
+
+    <!-- ── Forgot Password Panel ───────────────────── -->
+    <div id="forgot-panel" class="auth-card hidden">
+      <h2>Forgot password?</h2>
+      <p class="subtitle">Enter your email and we'll send you a reset link.</p>
+
+      <div id="forgot-alert" class="hidden"></div>
+
+      <!-- Request form (shown by default) -->
+      <div id="forgot-form-wrap">
+        <form id="forgot-form">
+          <div class="form-group">
+            <label class="form-label">Email address</label>
+            <input id="forgot-email" type="email" class="form-input"
+                   placeholder="you@company.com" required/>
+          </div>
+          <button type="submit" class="btn btn-primary btn-full btn-lg">
+            Send reset link
+          </button>
+        </form>
+      </div>
+
+      <!-- Sent confirmation (shown after submit) -->
+      <div id="forgot-sent" class="hidden">
+        <div class="sent-box">
+          <span class="sent-icon">📬</span>
+          <h3>Check your inbox</h3>
+          <p>
+            If <strong id="sent-email-display"></strong> is registered,
+            you'll receive a reset link within a minute.
+            <br/><br/>
+            The link expires in <strong>15 minutes</strong>.
+          </p>
+          <button class="btn btn-ghost btn-full" onclick="resendReset()">
+            Resend email
+          </button>
+        </div>
+      </div>
+
+      <span class="toggle-link" id="show-login-from-forgot"
+            onclick="showAuthPanel('login-panel')">← Back to sign in</span>
+    </div>
+
   </div>
 
   <script src="/js/auth.js"></script>
